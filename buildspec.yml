@@ -9,15 +9,16 @@ phases:
       - echo Loggin in to Amazon ECR...
       - aws --version
       - $(aws ecr get-login --region us-east-1 --no-include-email)
-      - REPOSITORY_URI=472348108051.dkr.ecr.us-east-1.amazonaws.com/orma/hello-cicd
+      - REPOSITORY_NAME=orma/hello-cicd
+      - REPOSITORY_URI=472348108051.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_NAME
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
       - echo Build started on `date`
       - echo Building docker image...
-      - docker build -t orma/hello-cicd .
-      - docker tag orma/hello-cicd:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker build -t $REPOSITORY_NAME .
+      - docker tag $REPOSITORY_NAME:latest $REPOSITORY_NAME:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
